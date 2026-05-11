@@ -210,14 +210,14 @@ export class CommandProcessor {
 
     switch (cmd.action) {
       case 'forward': {
-        const dist = (cmd.params.distance || 0) * 2;
+        const dist = (cmd.params.distance || 0) * 6;
         this.commandProgress = { target: dist, accumulated: 0, dir: 1 };
         this.robot.motorL = this.robot.speed * 1;
         this.robot.motorR = this.robot.speed * 1;
         break;
       }
       case 'backward': {
-        const dist = (cmd.params.distance || 0) * 2;
+        const dist = (cmd.params.distance || 0) * 6;
         this.commandProgress = { target: dist, accumulated: 0, dir: -1 };
         this.robot.motorL = -this.robot.speed * 1;
         this.robot.motorR = -this.robot.speed * 1;
