@@ -2,7 +2,7 @@
 // Loaded after Blockly is available on window
 
 export function defineCustomBlocks(Blockly: any) {
-  const blocks = Blockly.blocks;
+  const blocks = Blockly.Blocks;
 
   // Move Forward
   blocks['move_forward'] = {
