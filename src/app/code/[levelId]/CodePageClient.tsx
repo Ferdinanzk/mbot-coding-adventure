@@ -3,8 +3,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useI18n } from '@/lib/i18n';
-import { getLevel, getPoints } from '@/lib/levels';
+import { getLevel, getSimLevel, getPoints } from '@/lib/levels';
 import { useSimulator } from '@/components/simulator/useSimulator';
+import { useSoundEffects } from '@/hooks/useSoundEffects';
 import BlocklyWorkspace, { type BlocklyWorkspaceRef } from '@/components/blockly/BlocklyWorkspace';
 import { executeProgram } from '@/components/blockly/custom-blocks';
 import VictoryModal from '@/components/game/VictoryModal';
@@ -16,6 +17,7 @@ export default function CodePageClient() {
   const { t } = useI18n();
   const levelId = Number(params.levelId);
   const level = getLevel(levelId);
+  const simLevel = getSimLevel(levelId);
 
   const [blockCount, setBlockCount] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
@@ -26,6 +28,7 @@ export default function CodePageClient() {
   const [points, setPoints] = useState(0);
   const [elapsed, setElapsed] = useState(0);
   const [streak, setStreak] = useState(0);
+  const sounds = useSoundEffects();
 
   const workspaceRef = useRef<BlocklyWorkspaceRef>(null);
   const abortRef = useRef(false);
@@ -48,6 +51,7 @@ export default function CodePageClient() {
     setPoints(pts);
     setElapsed(timeTaken);
     setShowVictory(true);
+    sounds.win();
 
     // Save progress
     const saved = localStorage.getItem('mbot_game_state');
@@ -105,23 +109,25 @@ export default function CodePageClient() {
     if (abortRef.current) return;
     setShowFail(t.errors.collision);
     setIsRunning(false);
-  }, [t]);
+    sounds.lose();
+  }, [t, sounds]);
 
   const handleTimeout = useCallback(() => {
     if (abortRef.current) return;
     setShowFail(t.errors.timeout);
     setIsRunning(false);
-  }, [t]);
+    sounds.lose();
+  }, [t, sounds]);
 
-  const simOptions = level ? {
+  const simOptions = simLevel ? {
     level: {
-      start: level.start,
-      goal: level.goal,
-      walls: level.walls,
-      groundLines: level.groundLines,
-      cellSize: level.cellSize,
-      width: level.gridSize[0] * level.cellSize,
-      height: level.gridSize[1] * level.cellSize,
+      start: simLevel.start,
+      goal: simLevel.goal,
+      walls: simLevel.walls,
+      groundLines: simLevel.groundLines,
+      cellSize: simLevel.cellSize,
+      width: simLevel.gridSize[0] * simLevel.cellSize,
+      height: simLevel.gridSize[1] * simLevel.cellSize,
     },
     onWin: handleWin,
     onCollision: handleCollision,
@@ -147,6 +153,7 @@ export default function CodePageClient() {
 
     simRef.current.reset();
     simRef.current.start();
+    sounds.run();
 
     // Timeout check
     if (level.timeLimit) {
@@ -263,13 +270,13 @@ export default function CodePageClient() {
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 bg-white shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={() => router.push('/levels')} className="text-lg">← {t.home.back}</button>
+          <button onClick={() => { sounds.click(); router.push('/levels'); }} className="text-lg">← {t.home.back}</button>
           <div className="font-bold text-lg">{t.levelSelect.title} {levelId}</div>
         </div>
         <div className="flex items-center gap-4 text-sm">
           <div>{t.game.blocks}: <span className={`font-mono font-bold ${blockCount > level.maxBlocks ? 'text-red-500' : 'text-[#3498DB]'}`}>{blockCount}/{level.maxBlocks}</span></div>
           <div>{t.game.time}: <span className="font-mono font-bold">{sim.elapsed.toFixed(1)}s</span></div>
-          <button onClick={handlePause} className="px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200">⏸</button>
+          <button onClick={() => { sounds.click(); handlePause(); }} className="px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200">⏸</button>
         </div>
       </div>
 
@@ -293,14 +300,14 @@ export default function CodePageClient() {
           <div className="p-4 bg-white border-t border-gray-200 flex gap-3">
             {!isRunning ? (
               <button
-                onClick={runProgram}
+                onClick={() => { sounds.click(); runProgram(); }}
                 className="flex-1 py-3 rounded-xl bg-[#2ECC71] text-white font-bold text-lg shadow hover:scale-105 transition-transform"
               >
               ▶ {t.game.run}
               </button>
             ) : (
               <button
-                onClick={handleReset}
+                onClick={() => { sounds.click(); handleReset(); }}
                 className="flex-1 py-3 rounded-xl bg-[#E74C3C] text-white font-bold text-lg shadow hover:scale-105 transition-transform"
               >
               ⏹ {t.game.reset}
@@ -322,8 +329,8 @@ export default function CodePageClient() {
             <div className="text-4xl mb-2">💥</div>
             <div className="text-lg font-bold mb-4">{showFail}</div>
             <div className="flex gap-3">
-              <button onClick={handleRetry} className="flex-1 py-2 rounded-lg bg-[#3498DB] text-white font-bold">{t.results.retry}</button>
-              <button onClick={() => router.push('/levels')} className="flex-1 py-2 rounded-lg bg-gray-100 text-gray-700 font-bold">{t.results.menu}</button>
+              <button onClick={() => { sounds.click(); handleRetry(); }} className="flex-1 py-2 rounded-lg bg-[#3498DB] text-white font-bold">{t.results.retry}</button>
+              <button onClick={() => { sounds.click(); router.push('/levels'); }} className="flex-1 py-2 rounded-lg bg-gray-100 text-gray-700 font-bold">{t.results.menu}</button>
             </div>
           </div>
         </div>

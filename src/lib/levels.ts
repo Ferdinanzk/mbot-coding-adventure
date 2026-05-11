@@ -312,6 +312,17 @@ export function getLevel(id: number): LevelData | undefined {
   return LEVELS.find((l) => l.id === id) || SECRET_LEVELS.find((l) => l.id === id);
 }
 
+export function getSimLevel(id: number): LevelData | undefined {
+  const level = getLevel(id);
+  if (!level) return undefined;
+  const cs = level.cellSize;
+  return {
+    ...level,
+    walls: level.walls.map((w) => ({ x1: w.x1 * cs, y1: w.y1 * cs, x2: w.x2 * cs, y2: w.y2 * cs })),
+    groundLines: level.groundLines?.map((l) => ({ x1: l.x1 * cs, y1: l.y1 * cs, x2: l.x2 * cs, y2: l.y2 * cs })),
+  };
+}
+
 export function getPoints(levelId: number, stars: number, blocksUsed: number): number {
   const level = getLevel(levelId);
   if (!level) return 0;

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useI18n } from '@/lib/i18n';
+import { useSoundEffects } from '@/hooks/useSoundEffects';
 
 interface LevelProgress {
   id: number;
@@ -31,6 +32,7 @@ const SECRET_NAMES: Record<number, string> = {
 export default function LevelSelectPage() {
   const router = useRouter();
   const { t } = useI18n();
+  const sounds = useSoundEffects();
   const [levels, setLevels] = useState<LevelProgress[]>([]);
   const [secrets, setSecrets] = useState<SecretProgress[]>([]);
   const [streak, setStreak] = useState(0);
@@ -52,7 +54,7 @@ export default function LevelSelectPage() {
   return (
     <div className="min-h-screen flex flex-col items-center px-4 py-8">
       <div className="flex items-center justify-between w-full max-w-lg mb-6">
-        <button onClick={() => router.push('/')} className="text-lg">← {t.home.back}</button>
+        <button onClick={() => { sounds.click(); router.push('/'); }} className="text-lg">← {t.home.back}</button>
         <div className="flex items-center gap-2">
           <span>🔥 {streak}</span>
         </div>
@@ -64,7 +66,7 @@ export default function LevelSelectPage() {
         {levels.map((level) => (
           <button
             key={level.id}
-            onClick={() => level.unlocked && handleSelect(level.id)}
+            onClick={() => { sounds.click(); level.unlocked && handleSelect(level.id); }}
             disabled={!level.unlocked}
             className={`w-20 h-20 rounded-xl flex flex-col items-center justify-center gap-1 transition-all ${
               level.completed
@@ -96,7 +98,7 @@ export default function LevelSelectPage() {
               secret.unlocked && !secret.played && (
                 <button
                   key={secret.id}
-                  onClick={() => handleSelect(secret.id)}
+                  onClick={() => { sounds.click(); handleSelect(secret.id); }}
                   className="w-20 h-20 rounded-xl bg-[#FF6B6B] text-white hover:scale-110 transition-all flex flex-col items-center justify-center gap-1"
                 >
                   <span className="text-xl">🎁</span>

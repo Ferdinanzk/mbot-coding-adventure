@@ -3,11 +3,13 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useI18n } from '@/lib/i18n';
+import { useSoundEffects } from '@/hooks/useSoundEffects';
 import { SheetsClient } from '@/lib/sheets-client';
 
 export default function HomePage() {
   const router = useRouter();
   const { t, toggleLang, lang } = useI18n();
+  const sounds = useSoundEffects();
   const [showLogin, setShowLogin] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
   const [name, setName] = useState('');
@@ -83,19 +85,19 @@ export default function HomePage() {
       {!showLogin && !showCreate && (
         <div className="flex flex-col gap-4 w-full max-w-xs">
           <button
-            onClick={handleGuestPlay}
+            onClick={() => { sounds.click(); handleGuestPlay(); }}
             className="w-full py-4 rounded-2xl bg-[#3498DB] text-white text-xl font-bold shadow-lg hover:scale-105 transition-transform"
           >
             {t.home.playNow}
           </button>
           <button
-            onClick={() => setShowLogin(true)}
+            onClick={() => { sounds.click(); setShowLogin(true); }}
             className="w-full py-4 rounded-2xl bg-[#2ECC71] text-white text-xl font-bold shadow-lg hover:scale-105 transition-transform"
           >
             {t.home.studentLogin}
           </button>
           <button
-            onClick={() => setShowCreate(true)}
+            onClick={() => { sounds.click(); setShowCreate(true); }}
             className="w-full py-3 rounded-2xl bg-white text-[#2C3E50] text-lg font-bold shadow hover:scale-105 transition-transform"
           >
             {t.home.createAccount}
@@ -125,14 +127,14 @@ export default function HomePage() {
           )}
           {error && <div className="text-[#E74C3C] text-sm">{error}</div>}
           <button
-            onClick={showLogin ? handleLogin : handleCreate}
+            onClick={() => { sounds.click(); showLogin ? handleLogin() : handleCreate(); }}
             disabled={loading}
             className="w-full py-3 rounded-2xl bg-[#3498DB] text-white text-lg font-bold shadow hover:scale-105 transition-transform disabled:opacity-50"
           >
             {loading ? '...' : showLogin ? t.home.login : t.home.createAccount}
           </button>
           <button
-            onClick={() => { setShowLogin(false); setShowCreate(false); setError(''); }}
+            onClick={() => { sounds.click(); setShowLogin(false); setShowCreate(false); setError(''); }}
             className="text-[#5D6D7E] hover:text-[#2C3E50]"
           >
             {t.home.back}
