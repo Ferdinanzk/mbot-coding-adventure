@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useI18n } from '@/lib/i18n';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
+import { createDefaultState } from '@/hooks/useGameState';
 
 interface LevelProgress {
   id: number;
@@ -19,15 +20,6 @@ interface SecretProgress {
   played: boolean;
 }
 
-const LEVEL_NAMES: Record<number, string> = {
-  1: '向前走！', 2: '轉彎！', 3: '彎彎曲曲', 4: '重複之路', 5: '畫正方形',
-  6: '樓梯挑戰', 7: '星星軌跡', 8: '注意障礙！', 9: '迷宮入門', 10: '雙重障礙',
-  11: '螺旋之路', 12: '十字路口', 13: '長城迷宮', 14: '黑暗迷宮', 15: '終極挑戰',
-};
-
-const SECRET_NAMES: Record<number, string> = {
-  101: '彩虹迷宮', 102: '速度挑戰', 103: '鑽石收集', 104: '幽靈迷宮', 105: '無限螺旋',
-};
 
 export default function LevelSelectPage() {
   const router = useRouter();
@@ -39,11 +31,12 @@ export default function LevelSelectPage() {
 
   useEffect(() => {
     const saved = localStorage.getItem('mbot_game_state');
-    if (saved) {
-      const state = JSON.parse(saved);
-      setLevels(state.levels || []);
-      setSecrets(state.secretLevels || []);
-      setStreak(state.streak || 0);
+    const state = saved ? JSON.parse(saved) : createDefaultState();
+    setLevels(state.levels || []);
+    setSecrets(state.secretLevels || []);
+    setStreak(state.streak || 0);
+    if (!saved) {
+      localStorage.setItem('mbot_game_state', JSON.stringify(state));
     }
   }, []);
 
@@ -102,7 +95,7 @@ export default function LevelSelectPage() {
                   className="w-20 h-20 rounded-xl bg-[#FF6B6B] text-white hover:scale-110 transition-all flex flex-col items-center justify-center gap-1"
                 >
                   <span className="text-xl">🎁</span>
-                  <span className="text-xs">{SECRET_NAMES[secret.id] || '?'}</span>
+                  <span className="text-xs">{t.levels[secret.id]?.name || '?'}</span>
                 </button>
               )
             ))}

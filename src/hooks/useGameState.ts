@@ -57,17 +57,8 @@ function shuffleArray<T>(array: T[]): T[] {
   return arr;
 }
 
-function getInitialState(): GameState {
-  const saved = typeof window !== 'undefined' ? localStorage.getItem('mbot_game_state') : null;
-  if (saved) {
-    try {
-      const parsed = JSON.parse(saved);
-      if (parsed.levels?.length === 15) return parsed;
-    } catch { /* ignore */ }
-  }
-
+export function createDefaultState(): GameState {
   const secretPool = shuffleArray([101, 102, 103, 104, 105]);
-
   return {
     screen: 'main-menu',
     character: 'robot-1',
@@ -85,6 +76,17 @@ function getInitialState(): GameState {
     sessionStats: { blocksUsed: 0, maxBlocks: Infinity, timeElapsed: 0, stars: 0, points: 0 },
     isGuest: true,
   };
+}
+
+function getInitialState(): GameState {
+  const saved = typeof window !== 'undefined' ? localStorage.getItem('mbot_game_state') : null;
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      if (parsed.levels?.length === 15) return parsed;
+    } catch { /* ignore */ }
+  }
+  return createDefaultState();
 }
 
 export function useGameState() {

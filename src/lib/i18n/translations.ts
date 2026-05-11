@@ -160,10 +160,10 @@ export const zhTW: Translations = {
   },
   avatars: {
     'robot-1': '閃電',
-    'robot-2': '火花',
-    'robot-3': '齒輪',
-    'robot-4': '火箭',
-    'robot-5': '像素',
+    'robot-2': '齒輪',
+    'robot-3': '火箭',
+    'robot-4': '像素',
+    'robot-5': '機器人',
     'robot-6': '迴聲',
   },
   levels: {
@@ -270,10 +270,10 @@ export const en: Translations = {
   },
   avatars: {
     'robot-1': 'Bolt',
-    'robot-2': 'Spark',
-    'robot-3': 'Gizmo',
-    'robot-4': 'Nova',
-    'robot-5': 'Pixel',
+    'robot-2': 'Gear',
+    'robot-3': 'Rocket',
+    'robot-4': 'Pixel',
+    'robot-5': 'Robot',
     'robot-6': 'Echo',
   },
   levels: {

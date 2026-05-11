@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { zhTW, en, type Translations } from './translations';
 
 type Lang = 'zh-TW' | 'en';
@@ -20,13 +20,14 @@ const I18nContext = createContext<I18nContextType>({
 });
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLangState] = useState<Lang>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('mbot-lang') as Lang;
-      if (saved === 'zh-TW' || saved === 'en') return saved;
+  const [lang, setLangState] = useState<Lang>('zh-TW');
+
+  useEffect(() => {
+    const saved = localStorage.getItem('mbot-lang') as Lang;
+    if (saved === 'zh-TW' || saved === 'en') {
+      setLangState(saved);
     }
-    return 'zh-TW';
-  });
+  }, []);
 
   const setLang = useCallback((l: Lang) => {
     setLangState(l);

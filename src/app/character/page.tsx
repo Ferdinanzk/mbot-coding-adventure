@@ -3,14 +3,15 @@
 import { useRouter } from 'next/navigation';
 import { useI18n } from '@/lib/i18n';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
+import { createDefaultState } from '@/hooks/useGameState';
 
 const AVATARS = [
-  { id: 'robot-1', emoji: '⚡', color: '#3498DB', name: '閃電' },
-  { id: 'robot-2', emoji: '🔧', color: '#F1C40F', name: '齒輪' },
-  { id: 'robot-3', emoji: '🚀', color: '#E67E22', name: '火箭' },
-  { id: 'robot-4', emoji: '💻', color: '#9B59B6', name: '像素' },
-  { id: 'robot-5', emoji: '🤖', color: '#1ABC9C', name: '機器人' },
-  { id: 'robot-6', emoji: '🔊', color: '#E74C3C', name: '迴聲' },
+  { id: 'robot-1', emoji: '⚡', color: '#3498DB' },
+  { id: 'robot-2', emoji: '🔧', color: '#F1C40F' },
+  { id: 'robot-3', emoji: '🚀', color: '#E67E22' },
+  { id: 'robot-4', emoji: '💻', color: '#9B59B6' },
+  { id: 'robot-5', emoji: '🤖', color: '#1ABC9C' },
+  { id: 'robot-6', emoji: '🔊', color: '#E74C3C' },
 ];
 
 export default function CharacterSelectPage() {
@@ -20,11 +21,9 @@ export default function CharacterSelectPage() {
 
   const handleSelect = (id: string) => {
     const saved = localStorage.getItem('mbot_game_state');
-    if (saved) {
-      const state = JSON.parse(saved);
-      state.character = id;
-      localStorage.setItem('mbot_game_state', JSON.stringify(state));
-    }
+    const state = saved ? JSON.parse(saved) : createDefaultState();
+    state.character = id;
+    localStorage.setItem('mbot_game_state', JSON.stringify(state));
     router.push('/levels');
   };
 
@@ -40,7 +39,7 @@ export default function CharacterSelectPage() {
             style={{ color: avatar.color }}
           >
             <span className="text-5xl">{avatar.emoji}</span>
-            <span className="font-bold">{avatar.name}</span>
+            <span className="font-bold">{t.avatars[avatar.id]}</span>
           </button>
         ))}
       </div>
