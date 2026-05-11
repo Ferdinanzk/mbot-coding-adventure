@@ -53,6 +53,7 @@ export interface Translations {
     quit: string;
   };
   blocks: {
+    when_run: string;
     move_forward: string;
     move_backward: string;
     turn_left: string;
@@ -68,6 +69,12 @@ export interface Translations {
     seconds: string;
     degrees: string;
     cm: string;
+  };
+  blocklyCategories: {
+    motion: string;
+    control: string;
+    sensing: string;
+    events: string;
   };
   errors: {
     tooManyBlocks: string;
@@ -135,6 +142,7 @@ export const zhTW: Translations = {
     quit: '離開',
   },
   blocks: {
+    when_run: '▶ 開始',
     move_forward: '前進 {distance} 公分',
     move_backward: '後退 {distance} 公分',
     turn_left: '向左轉 {degrees} 度',
@@ -150,6 +158,12 @@ export const zhTW: Translations = {
     seconds: '秒',
     degrees: '度',
     cm: '公分',
+  },
+  blocklyCategories: {
+    motion: '動作',
+    control: '控制',
+    sensing: '感測',
+    events: '事件',
   },
   errors: {
     tooManyBlocks: '方塊太多！',
@@ -245,6 +259,7 @@ export const en: Translations = {
     quit: 'Quit',
   },
   blocks: {
+    when_run: '▶ Run',
     move_forward: 'move forward {distance} cm',
     move_backward: 'move backward {distance} cm',
     turn_left: 'turn left {degrees} degrees',
@@ -260,6 +275,12 @@ export const en: Translations = {
     seconds: 'seconds',
     degrees: 'degrees',
     cm: 'cm',
+  },
+  blocklyCategories: {
+    motion: 'Motion',
+    control: 'Control',
+    sensing: 'Sensing',
+    events: 'Events',
   },
   errors: {
     tooManyBlocks: 'Too many blocks!',

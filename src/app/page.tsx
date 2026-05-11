@@ -16,6 +16,7 @@ export default function HomePage() {
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const sheetsConfigured = !!process.env.NEXT_PUBLIC_SHEETS_URL;
 
   const handleGuestPlay = () => {
     const saved = localStorage.getItem('mbot_game_state');
@@ -90,18 +91,28 @@ export default function HomePage() {
           >
             {t.home.playNow}
           </button>
-          <button
-            onClick={() => { sounds.click(); setShowLogin(true); }}
-            className="w-full py-4 rounded-2xl bg-[#2ECC71] text-white text-xl font-bold shadow-lg hover:scale-105 transition-transform"
-          >
-            {t.home.studentLogin}
-          </button>
-          <button
-            onClick={() => { sounds.click(); setShowCreate(true); }}
-            className="w-full py-3 rounded-2xl bg-white text-[#2C3E50] text-lg font-bold shadow hover:scale-105 transition-transform"
-          >
-            {t.home.createAccount}
-          </button>
+          {sheetsConfigured ? (
+            <>
+              <button
+                onClick={() => { sounds.click(); setShowLogin(true); }}
+                className="w-full py-4 rounded-2xl bg-[#2ECC71] text-white text-xl font-bold shadow-lg hover:scale-105 transition-transform"
+              >
+                {t.home.studentLogin}
+              </button>
+              <button
+                onClick={() => { sounds.click(); setShowCreate(true); }}
+                className="w-full py-3 rounded-2xl bg-white text-[#2C3E50] text-lg font-bold shadow hover:scale-105 transition-transform"
+              >
+                {t.home.createAccount}
+              </button>
+            </>
+          ) : (
+            <div className="text-center text-sm text-[#5D6D7E] bg-white/60 rounded-xl px-3 py-2">
+              {lang === 'zh-TW'
+                ? '訪客模式：無需登入即可遊玩。進度儲存在本機。'
+                : 'Guest mode: Play without logging in. Progress saved locally.'}
+            </div>
+          )}
         </div>
       )}
 

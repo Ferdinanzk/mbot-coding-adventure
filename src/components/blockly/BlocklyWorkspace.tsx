@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
+import { useI18n } from '@/lib/i18n';
 import { defineCustomBlocks, getToolboxXml, getProgramFromWorkspace, countBlocks, type ProgramNode } from './custom-blocks';
 
 export interface BlocklyWorkspaceRef {
@@ -13,11 +14,14 @@ interface BlocklyWorkspaceProps {
   blockCount?: (count: number) => void;
 }
 
+const INITIAL_XML = `<xml xmlns="https://developers.google.com/blockly/xml"><block type="when_run" x="20" y="20"></block></xml>`;
+
 const BlocklyWorkspace = forwardRef<BlocklyWorkspaceRef, BlocklyWorkspaceProps>(
   ({ availableBlocks, onChange, blockCount }, ref) => {
     const blocklyDivRef = useRef<HTMLDivElement>(null);
     const workspaceRef = useRef<any>(null);
     const [loaded, setLoaded] = useState(false);
+    const { t } = useI18n();
 
     useEffect(() => {
       if (typeof window === 'undefined') return;
@@ -35,6 +39,10 @@ const BlocklyWorkspace = forwardRef<BlocklyWorkspaceRef, BlocklyWorkspaceProps>(
 
       return () => {
         document.head.removeChild(script);
+        if (workspaceRef.current) {
+          workspaceRef.current.dispose();
+          workspaceRef.current = null;
+        }
       };
     }, []);
 
@@ -42,9 +50,15 @@ const BlocklyWorkspace = forwardRef<BlocklyWorkspaceRef, BlocklyWorkspaceProps>(
       const Blockly = (window as any).Blockly;
       if (!Blockly || !blocklyDivRef.current) return;
 
-      defineCustomBlocks(Blockly);
+      const labels = {
+        when_run: t.blocks.when_run,
+        motion: t.blocklyCategories.motion,
+        control: t.blocklyCategories.control,
+        sensing: t.blocklyCategories.sensing,
+      };
+      defineCustomBlocks(Blockly, labels);
 
-      const toolboxXml = getToolboxXml(availableBlocks);
+      const toolboxXml = getToolboxXml(availableBlocks, labels);
 
       const workspace = Blockly.inject(blocklyDivRef.current, {
         toolbox: Blockly.utils.xml.textToDom(toolboxXml),
@@ -52,6 +66,14 @@ const BlocklyWorkspace = forwardRef<BlocklyWorkspaceRef, BlocklyWorkspaceProps>(
         zoom: { controls: true, wheel: true, startScale: 1.0, maxScale: 2, minScale: 0.5 },
         trashcan: true,
       });
+
+      // Pre-populate workspace with when_run block
+      try {
+        const initialDom = Blockly.utils.xml.textToDom(INITIAL_XML);
+        Blockly.Xml.domToWorkspace(initialDom, workspace);
+      } catch {
+        // ignore initial load errors
+      }
 
       workspaceRef.current = workspace;
       setLoaded(true);

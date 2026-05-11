@@ -1,12 +1,30 @@
 // Custom Blockly blocks for mBot Coding Adventure
 // Loaded after Blockly is available on window
 
-export function defineCustomBlocks(Blockly: any) {
+export interface BlocklyLabels {
+  when_run: string;
+  motion: string;
+  control: string;
+  sensing: string;
+}
+
+export function defineCustomBlocks(Blockly: any, labels?: BlocklyLabels) {
   const blocks = Blockly.Blocks;
+  const L = labels || { when_run: '▶ 開始', motion: '動作', control: '控制', sensing: '感測' };
+
+  // When Run — hat block (no previous statement)
+  blocks['when_run'] = {
+    init: function () {
+      this.appendDummyInput().appendField(L.when_run);
+      this.setNextStatement(true);
+      this.setColour(65); // Yellow event color
+      this.setTooltip('點擊執行時開始程式');
+    },
+  };
 
   // Move Forward
   blocks['move_forward'] = {
-    init: function() {
+    init: function () {
       this.appendDummyInput()
         .appendField('前進')
         .appendField(new Blockly.FieldNumber(10, 1, 100), 'DISTANCE')
@@ -20,7 +38,7 @@ export function defineCustomBlocks(Blockly: any) {
 
   // Move Backward
   blocks['move_backward'] = {
-    init: function() {
+    init: function () {
       this.appendDummyInput()
         .appendField('後退')
         .appendField(new Blockly.FieldNumber(10, 1, 100), 'DISTANCE')
@@ -34,7 +52,7 @@ export function defineCustomBlocks(Blockly: any) {
 
   // Turn Left
   blocks['turn_left'] = {
-    init: function() {
+    init: function () {
       this.appendDummyInput()
         .appendField('向左轉')
         .appendField(new Blockly.FieldNumber(90, 1, 360), 'DEGREES')
@@ -48,7 +66,7 @@ export function defineCustomBlocks(Blockly: any) {
 
   // Turn Right
   blocks['turn_right'] = {
-    init: function() {
+    init: function () {
       this.appendDummyInput()
         .appendField('向右轉')
         .appendField(new Blockly.FieldNumber(90, 1, 360), 'DEGREES')
@@ -62,7 +80,7 @@ export function defineCustomBlocks(Blockly: any) {
 
   // Stop Motors
   blocks['stop_motors'] = {
-    init: function() {
+    init: function () {
       this.appendDummyInput().appendField('停止馬達');
       this.setPreviousStatement(true);
       this.setNextStatement(true);
@@ -73,7 +91,7 @@ export function defineCustomBlocks(Blockly: any) {
 
   // Wait
   blocks['wait'] = {
-    init: function() {
+    init: function () {
       this.appendDummyInput()
         .appendField('等待')
         .appendField(new Blockly.FieldNumber(1, 0.1, 10, 0.1), 'SECONDS')
@@ -87,7 +105,7 @@ export function defineCustomBlocks(Blockly: any) {
 
   // Repeat
   blocks['repeat'] = {
-    init: function() {
+    init: function () {
       this.appendDummyInput()
         .appendField('重複')
         .appendField(new Blockly.FieldNumber(2, 1, 20), 'TIMES')
@@ -102,7 +120,7 @@ export function defineCustomBlocks(Blockly: any) {
 
   // If Obstacle
   blocks['if_obstacle'] = {
-    init: function() {
+    init: function () {
       this.appendDummyInput().appendField('如果前方有障礙物');
       this.appendStatementInput('DO').setCheck(null);
       this.setPreviousStatement(true);
@@ -114,7 +132,7 @@ export function defineCustomBlocks(Blockly: any) {
 
   // If Else
   blocks['if_else'] = {
-    init: function() {
+    init: function () {
       this.appendDummyInput().appendField('如果前方有障礙物');
       this.appendStatementInput('DO').setCheck(null).appendField('執行');
       this.appendStatementInput('ELSE').setCheck(null).appendField('否則');
@@ -127,7 +145,7 @@ export function defineCustomBlocks(Blockly: any) {
 
   // Ultrasonic value block (expression)
   blocks['ultrasonic'] = {
-    init: function() {
+    init: function () {
       this.appendDummyInput().appendField('超音波距離');
       this.setOutput(true, 'Number');
       this.setColour(230);
@@ -201,6 +219,14 @@ function serializeBlock(block: any): ProgramNode[] {
 export function getProgramFromWorkspace(workspace: any): ProgramNode[] {
   if (!workspace) return [];
   const topBlocks = workspace.getTopBlocks(true);
+
+  // Prefer the 'when_run' hat block as the single entry point
+  const startBlock = topBlocks.find((b: any) => b.type === 'when_run');
+  if (startBlock) {
+    return serializeBlock(startBlock.getNextBlock());
+  }
+
+  // Fallback: execute all top-level chains (legacy behavior)
   const all: ProgramNode[] = [];
   for (const block of topBlocks) {
     all.push(...serializeBlock(block));
@@ -253,6 +279,7 @@ export function countBlocks(workspace: any): number {
   const topBlocks = workspace.getTopBlocks(true);
   let count = 0;
   const countRec = (block: any) => {
+    if (block.type === 'when_run') return; // Don't count the hat block
     count++;
     const children = block.getChildren(true);
     for (const child of children) countRec(child);
@@ -261,7 +288,9 @@ export function countBlocks(workspace: any): number {
   return count;
 }
 
-export function getToolboxXml(availableBlocks: string[]): string {
+export function getToolboxXml(availableBlocks: string[], labels?: BlocklyLabels): string {
+  const L = labels || { motion: '動作', control: '控制', sensing: '感測' };
+
   const allBlocks: Record<string, string> = {
     move_forward: `<block type="move_forward"><field name="DISTANCE">10</field></block>`,
     move_backward: `<block type="move_backward"><field name="DISTANCE">10</field></block>`,
@@ -285,7 +314,8 @@ export function getToolboxXml(availableBlocks: string[]): string {
   for (const [cat, blockIds] of Object.entries(categories)) {
     const filtered = blockIds.filter((id) => availableBlocks.includes(id));
     if (!filtered.length) continue;
-    xml += `<category name="${cat === 'motion' ? '動作' : cat === 'control' ? '控制' : '感測'}">`;
+    const catName = cat === 'motion' ? L.motion : cat === 'control' ? L.control : L.sensing;
+    xml += `<category name="${catName}">`;
     for (const id of filtered) {
       xml += allBlocks[id];
     }
