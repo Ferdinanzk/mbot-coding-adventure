@@ -279,8 +279,7 @@ export function countBlocks(workspace: any): number {
   const topBlocks = workspace.getTopBlocks(true);
   let count = 0;
   const countRec = (block: any) => {
-    if (block.type === 'when_run') return; // Don't count the hat block
-    count++;
+    if (block.type !== 'when_run') count++;
     const children = block.getChildren(true);
     for (const child of children) countRec(child);
   };

@@ -119,20 +119,22 @@ export default function CodePageClient() {
     sounds.lose();
   }, [t, sounds]);
 
-  const simOptions = useMemo(() => simLevel ? {
-    level: {
-      start: simLevel.start,
-      goal: simLevel.goal,
-      walls: simLevel.walls,
-      groundLines: simLevel.groundLines,
-      cellSize: simLevel.cellSize,
-      width: simLevel.gridSize[0] * simLevel.cellSize,
-      height: simLevel.gridSize[1] * simLevel.cellSize,
-    },
-    onWin: handleWin,
-    onCollision: handleCollision,
-    timeScale: 2,
-  } : { level: { start: { x: 0, y: 0, heading: 0 }, goal: { x: 0, y: 0 }, walls: [], cellSize: 60, width: 600, height: 400 }, timeScale: 2 }, [simLevel, handleWin, handleCollision]);
+  const simOptions = useMemo(() => {
+    return simLevel ? {
+      level: {
+        start: simLevel.start,
+        goal: simLevel.goal,
+        walls: simLevel.walls,
+        groundLines: simLevel.groundLines,
+        cellSize: simLevel.cellSize,
+        width: simLevel.gridSize[0] * simLevel.cellSize,
+        height: simLevel.gridSize[1] * simLevel.cellSize,
+      },
+      onWin: handleWin,
+      onCollision: handleCollision,
+      timeScale: 2,
+    } : { level: { start: { x: 0, y: 0, heading: 0 }, goal: { x: 0, y: 0 }, walls: [], cellSize: 60, width: 600, height: 400 }, timeScale: 2 };
+  }, [simLevel, handleWin, handleCollision]);
 
   const sim = useSimulator(simOptions);
   const simRef = useRef(sim);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useMemo } from 'react';
 
 let globalCtx: AudioContext | null = null;
 
@@ -138,5 +138,6 @@ export function useSoundEffects() {
 
   const isEnabled = useCallback(() => enabledRef.current, []);
 
-  return { click, snap, run, win, lose, star, unlock, toggle, isEnabled };
+  return useMemo(() => ({ click, snap, run, win, lose, star, unlock, toggle, isEnabled }),
+    [click, snap, run, win, lose, star, unlock, toggle, isEnabled]);
 }
