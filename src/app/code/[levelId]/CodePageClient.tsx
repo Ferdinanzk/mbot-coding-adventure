@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useI18n } from '@/lib/i18n';
 import { getLevel, getSimLevel, getPoints } from '@/lib/levels';
@@ -16,8 +16,8 @@ export default function CodePageClient() {
   const params = useParams();
   const { t } = useI18n();
   const levelId = Number(params.levelId);
-  const level = getLevel(levelId);
-  const simLevel = getSimLevel(levelId);
+  const level = useMemo(() => getLevel(levelId), [levelId]);
+  const simLevel = useMemo(() => getSimLevel(levelId), [levelId]);
 
   const [blockCount, setBlockCount] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
@@ -119,7 +119,7 @@ export default function CodePageClient() {
     sounds.lose();
   }, [t, sounds]);
 
-  const simOptions = simLevel ? {
+  const simOptions = useMemo(() => simLevel ? {
     level: {
       start: simLevel.start,
       goal: simLevel.goal,
@@ -132,7 +132,7 @@ export default function CodePageClient() {
     onWin: handleWin,
     onCollision: handleCollision,
     timeScale: 2,
-  } : { level: { start: { x: 0, y: 0, heading: 0 }, goal: { x: 0, y: 0 }, walls: [], cellSize: 60, width: 600, height: 400 }, timeScale: 2 };
+  } : { level: { start: { x: 0, y: 0, heading: 0 }, goal: { x: 0, y: 0 }, walls: [], cellSize: 60, width: 600, height: 400 }, timeScale: 2 }, [simLevel, handleWin, handleCollision]);
 
   const sim = useSimulator(simOptions);
   const simRef = useRef(sim);
