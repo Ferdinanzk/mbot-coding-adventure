@@ -47,7 +47,7 @@ export default function LevelSelectPage() {
   return (
     <div className="min-h-screen flex flex-col items-center px-4 py-8">
       <div className="flex items-center justify-between w-full max-w-lg mb-6">
-        <button onClick={() => { sounds.click(); router.push('/'); }} className="text-lg">← {t.home.back}</button>
+        <button onClick={() => { sounds.click(); router.push('/'); }} className="text-lg text-gray-900">← {t.home.back}</button>
         <div className="flex items-center gap-2">
           <span>🔥 {streak}</span>
         </div>

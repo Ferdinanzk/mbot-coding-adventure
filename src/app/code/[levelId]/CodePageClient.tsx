@@ -272,13 +272,13 @@ export default function CodePageClient() {
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 bg-white shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={() => { sounds.click(); router.push('/levels'); }} className="text-lg">← {t.home.back}</button>
+          <button onClick={() => { sounds.click(); router.push('/levels'); }} className="text-lg text-gray-900">← {t.home.back}</button>
           <div className="font-bold text-lg">{t.levelSelect.title} {levelId}</div>
         </div>
         <div className="flex items-center gap-4 text-sm">
           <div>{t.game.blocks}: <span className={`font-mono font-bold ${blockCount > level.maxBlocks ? 'text-red-500' : 'text-[#3498DB]'}`}>{blockCount}/{level.maxBlocks}</span></div>
           <div>{t.game.time}: <span className="font-mono font-bold">{sim.elapsed.toFixed(1)}s</span></div>
-          <button onClick={() => { sounds.click(); handlePause(); }} className="px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200">⏸</button>
+          <button onClick={() => { sounds.click(); handlePause(); }} className="px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-900">⏸</button>
         </div>
       </div>
 

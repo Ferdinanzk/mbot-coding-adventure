@@ -71,7 +71,7 @@ export default function HomePage() {
       <div className="absolute top-4 right-4">
         <button
           onClick={toggleLang}
-          className="px-3 py-1 rounded-full bg-white shadow text-sm font-medium hover:bg-gray-50"
+          className="px-3 py-1 rounded-full bg-white shadow text-sm font-medium text-gray-900 hover:bg-gray-50"
         >
           {lang === 'zh-TW' ? 'EN' : '中文'}
         </button>
