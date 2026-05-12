@@ -8,6 +8,7 @@ import { useSimulator } from '@/components/simulator/useSimulator';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
 import BlocklyWorkspace, { type BlocklyWorkspaceRef } from '@/components/blockly/BlocklyWorkspace';
 import { executeProgram } from '@/components/blockly/custom-blocks';
+import { SheetsClient } from '@/lib/sheets-client';
 import VictoryModal from '@/components/game/VictoryModal';
 import PauseOverlay from '@/components/game/PauseOverlay';
 
@@ -102,6 +103,11 @@ export default function CodePageClient() {
 
       setStreak(state.streak || 0);
       localStorage.setItem('mbot_game_state', JSON.stringify(state));
+
+      // Sync progress to backend if logged in
+      if (state.studentId) {
+        SheetsClient.saveStudentProgress(state.studentId, levelId, starRating, used, Math.round(timeTaken)).catch(() => {});
+      }
     }
   }, [blockCount, level, levelId]);
 
