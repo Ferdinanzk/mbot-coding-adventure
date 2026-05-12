@@ -123,7 +123,7 @@ export default function HomePage() {
             placeholder={t.home.enterName}
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3498DB] outline-none text-lg"
+            className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3498DB] outline-none text-lg text-gray-900"
             maxLength={20}
           />
           {showLogin && (
@@ -132,7 +132,7 @@ export default function HomePage() {
               placeholder={t.home.enterPin}
               value={pin}
               onChange={(e) => setPin(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3498DB] outline-none text-lg"
+              className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#3498DB] outline-none text-lg text-gray-900"
               maxLength={4}
             />
           )}
